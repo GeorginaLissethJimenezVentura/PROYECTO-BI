@@ -1,0 +1,196 @@
+import pandas as pd
+
+urls = [
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_0121.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_0221.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_0321.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_0421.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_0521.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_0621.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_0721.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_0821.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_0921.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_1021.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_1121.csv",
+    "https://raw.githubusercontent.com/GeorginaLissethJimenezVentura/PROYECTO-BI/refs/heads/main/Datos/2021/er_b_1221.csv"
+]
+
+
+def clasificar(codigo):
+
+    codigo = str(codigo)
+
+    if codigo.startswith(("61", "62", "63")):
+        return "Ingreso"
+
+    if codigo.startswith(("71", "72", "73")):
+        return "Costo"
+
+    if codigo.startswith(("81", "82", "83", "84", "85", "86", "87", "88")):
+        return "Gasto"
+
+    return "Otro"
+
+
+dataframes = []
+
+for url in urls:
+
+    print(f"Procesando: {url}")
+
+    archivo = url.split("/")[-1]
+
+    mes = archivo[5:7]
+    anio = "20" + archivo[7:9]
+
+    periodo = f"{anio}-{mes}-01"
+
+    # Leer archivo completo
+    contenido = pd.read_csv(
+        url,
+        header=None,
+        encoding="utf-8"
+    )
+
+    # Buscar fila donde aparece "Concepto"
+    fila_header = None
+
+    for i in range(len(contenido)):
+        valor = str(contenido.iloc[i, 0]).strip()
+
+        if valor == "Concepto":
+            fila_header = i
+            break
+
+    if fila_header is None:
+        print(f"No se encontró encabezado en {archivo}")
+        continue
+
+    # Leer nuevamente usando la fila correcta como encabezado
+    df = pd.read_csv(
+        url,
+        header=fila_header,
+        encoding="utf-8"
+    )
+
+    # Renombrar primera columna
+    df.rename(
+        columns={df.columns[0]: "ConceptoCompleto"},
+        inplace=True
+    )
+
+    # Eliminar columna Total Instituciones
+    columnas_eliminar = [
+        c for c in df.columns
+        if "Total Instituciones" in str(c)
+    ]
+
+    df.drop(
+        columns=columnas_eliminar,
+        inplace=True,
+        errors="ignore"
+    )
+
+    # Eliminar filas vacías
+    df = df.dropna(subset=["ConceptoCompleto"])
+
+    # Extraer código de cuenta (2 o más dígitos)
+    df["CodigoCuenta"] = (
+        df["ConceptoCompleto"]
+        .astype(str)
+        .str.extract(r"^(\d+)")
+    )
+
+    # Mantener solo registros con código
+    df = df[df["CodigoCuenta"].notna()]
+
+    # Columnas de bancos
+    columnas_bancos = [
+        c for c in df.columns
+        if c not in [
+            "ConceptoCompleto",
+            "CodigoCuenta"
+        ]
+    ]
+
+    # Convertir a formato largo
+    df_largo = df.melt(
+        id_vars=[
+            "ConceptoCompleto",
+            "CodigoCuenta"
+        ],
+        value_vars=columnas_bancos,
+        var_name="NombreBanco",
+        value_name="Monto"
+    )
+
+    # Limpiar nombre banco Cuscatlán
+    df_largo["NombreBanco"] = (
+        df_largo["NombreBanco"]
+        .astype(str)
+        .str.replace(r"\s*1/$", "", regex=True)
+        .str.strip()
+    )
+
+    # Limpiar concepto
+    df_largo["Concepto"] = (
+        df_largo["ConceptoCompleto"]
+        .astype(str)
+        .str.replace(r"^\d+\s*", "", regex=True)
+        .str.strip()
+    )
+
+    # Clasificar cuenta
+    df_largo["TipoCuenta"] = (
+        df_largo["CodigoCuenta"]
+        .apply(clasificar)
+    )
+
+    # Fecha
+    df_largo["Periodo"] = periodo
+
+    # Convertir monto
+    df_largo["Monto"] = pd.to_numeric(
+        df_largo["Monto"],
+        errors="coerce"
+    )
+
+    # Eliminar montos nulos
+    df_largo = df_largo[
+        df_largo["Monto"].notna()
+    ]
+
+    # Seleccionar columnas finales
+    df_largo = df_largo[
+        [
+            "Periodo",
+            "NombreBanco",
+            "CodigoCuenta",
+            "Concepto",
+            "TipoCuenta",
+            "Monto"
+        ]
+    ]
+
+    dataframes.append(df_largo)
+
+# Unir todos los meses
+df_final = pd.concat(
+    dataframes,
+    ignore_index=True
+)
+
+# Exportar CSV final
+df_final.to_csv(
+    "EstadoResultadosHistorico.csv",
+    index=False,
+    encoding="utf-8-sig"
+)
+
+print("\nPrimeras filas:")
+print(df_final.head())
+
+print("\nCantidad de registros:")
+print(len(df_final))
+
+print("\nArchivo generado: EstadoResultadosHistorico.csv")
