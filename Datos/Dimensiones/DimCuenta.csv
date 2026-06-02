@@ -1,0 +1,62 @@
+﻿IdCuenta,CodigoCuenta,Concepto,TipoCuenta
+1,61,Ingresos de operaciones de intermediación,Ingreso
+2,62,Ingresos de otras operaciones,Ingreso
+3,63,Ingresos no operacionales,Ingreso
+4,71,Costos de operaciones de intermediación,Costo
+5,72,Costos de otras operaciones,Costo
+6,81,Gastos de operación,Gasto
+7,82,Gastos no operacionales,Gasto
+8,83,Impuestos directos,Gasto
+9,84,Contribuciones especiales,Gasto
+10,6110,Ingresos de operaciones de intermediación,Ingreso
+11,6210,Ingresos de otras operaciones,Ingreso
+12,6310,Ingresos no operacionales,Ingreso
+13,7110,Captación de recursos,Costo
+14,7120,Saneamiento de activos de intermediación,Costo
+15,7130,Castigos de activos de intermediación,Costo
+16,7210,Operaciones en moneda extranjera,Costo
+17,7220,Cartas de crédito,Costo
+18,7230,Avales y fianzas,Costo
+19,7240,Prestación de servicios,Costo
+20,7250,Saneamientos,Costo
+21,7260,Castigos de contingencias,Costo
+22,8110,Gastos de funcionarios y empleados,Gasto
+23,8120,Gastos generales,Gasto
+24,8130,depreciaciones y amortizaciones,Gasto
+25,8210,Gastos de ejercicios anteriores,Gasto
+26,8220,Perdidas en venta de activos,Gasto
+27,8230,Gastos por explotacion de activos,Gasto
+28,8240,Castigos de bienes recibidos en pago o adjudicados,Gasto
+29,8250,Gastos por diferencias temporarias de impuestos sobre las ganancias,Gasto
+30,8260,Perdidas por contingencias,Gasto
+31,8270,Otros,Gasto
+32,8310,Impuesto sobre la renta,Gasto
+33,61,Ingresos financieros,Ingreso
+34,62,Otros ingresos financieros,Ingreso
+35,63,Ingresos de otras operaciones,Ingreso
+36,71,Costos financieros,Costo
+37,81,Gastos de administración,Gasto
+38,711,Costos financieros,Costo
+39,713,Constitución de estimaciones de pérdida por castigos  de activos de riesgo crediticio (arc),Costo
+40,6110,Ingresos financieros,Ingreso
+41,6111,Ganancia por cambios en el VR de activos financieros y pasivos financieros,Ingreso
+42,6112,Ganancia por reversión de deterioro de activos financieros,Ingreso
+43,6113,Ganancia por venta de inversiones financieras,Ingreso
+44,6210,Otros ingresos financieros,Ingreso
+45,6310,Ingresos de otras operaciones,Ingreso
+46,7110,Costos de pasivos financieros,Costo
+47,7111,Pérdida por cambios en el vr de activos financieros y pasivos financieros,Costo
+48,7112,Pérdidas por deterioro de activos financieros,Costo
+49,7113,Pérdida por venta de inversiones financieras,Costo
+50,7114,Otros costos financieros,Costo
+51,7120,Constitución de estimaciones de pérdida por  saneamiento de activos de riesgo crediticio (arc),Costo
+52,7210,Comisiones de otros servicios,Costo
+53,7211,Pérdidas generadas por entidades registradas bajo el método de la participación,Costo
+54,7212,Pérdidas por operaciones en moneda extranjera,Costo
+55,7213,Pérdida por importes ineficaces en operaciones de cobertura,Costo
+56,7214,Pérdida por deterioro de valor de activos,Costo
+57,7215,Pérdida en venta de activos,Costo
+58,7299,Costos por explotación de activos,Costo
+59,8130,Depreciaciones y amortizaciones,Gasto
+60,8140,Provisiones,Gasto
+61,8150,Gasto por impuesto sobre las ganancias,Gasto
